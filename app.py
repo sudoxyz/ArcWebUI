@@ -22,7 +22,7 @@ def parse_gpu_stream():
     brace_balance = 0
 
     process = subprocess.Popen(
-        ["intel_gpu_top", "-J"],
+        ["intel_gpu_top", "-J", "-s", "500"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
