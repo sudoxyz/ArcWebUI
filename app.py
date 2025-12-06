@@ -55,31 +55,64 @@ def parse_gpu_stream():
                 for client, stats in clients.items():
                     engine_classes = stats.get('engine-classes', {})
 
-                    video = engine_classes.get('Video', {}).get('busy', 0)
-                    videoenhance = engine_classes.get('VideoEnhance', {}).get('busy', 0)
-                    render = engine_classes.get('Render/3D', {}).get('busy', 0)
-                    blitter = engine_classes.get('Blitter', {}).get('busy', 0)
-                    unknown = engine_classes.get('[unknown]', {}).get('busy', 0)
-                    
+                    videoClient = round(float(engine_classes.get('Video', {}).get('busy', 0)), 2)
+                    videoenhanceClient = round(float(engine_classes.get('VideoEnhance', {}).get('busy', 0)), 2)
+                    renderClient = round(float(engine_classes.get('Render/3D', {}).get('busy', 0)), 2)
+                    blitterClient = round(float(engine_classes.get('Blitter', {}).get('busy', 0)), 2)
+                    unknownClient = round(float(engine_classes.get('[unknown]', {}).get('busy', 0)), 2)
+
+                    if videoClient > 100:
+                        videoClient = 100
+                    if videoenhanceClient > 100:
+                        videoenhanceClient = 100
+                    if renderClient > 100:
+                        renderClient = 100
+                    if blitterClient > 100:
+                        blitterClient = 100
+                    if unknownClient > 100:
+                        unknownClient = 100
 
                     current_client_stats[client] = {
                         "name": stats.get('name', ''),
                         "pid": stats.get('pid', ''),
-                        "Video": int(float(video)),
-                        "Video Enhance": int(float(videoenhance)),
-                        "Render": int(float(render)),
-                        "Blitter": int(float(blitter)),
-                        "Unknown": int(float(unknown))
+                        "Video": videoClient,
+                        "Video Enhance": videoenhanceClient,
+                        "Render": renderClient,
+                        "Blitter": blitterClient,
+                        "Unknown": unknownClient
                     }
                     
+                video0GPU = round(engines.get('Video/0', {}).get('busy', 0), 2)
+                video1GPU = round(engines.get('Video/1', {}).get('busy', 0), 2)
+                renderGPU = round(engines.get('Render/3D/0', {}).get('busy', 0), 2)
+                blitterGPU = round(engines.get('Blitter/0', {}).get('busy', 0), 2)
+                videoenhance0GPU = round(engines.get('VideoEnhance/0', {}).get('busy', 0), 2)
+                videoenhance1GPU = round(engines.get('VideoEnhance/1', {}).get('busy', 0), 2)
+                unknownGPU = round(engines.get('[unknown]/0', {}).get('busy', 0), 2)
+                
+                if video0GPU > 100:
+                    video0GPU = 100
+                if video1GPU > 100:
+                    video1GPU = 100
+                if renderGPU > 100:
+                    renderGPU = 100
+                if blitterGPU > 100:
+                    blitterGPU = 100
+                if videoenhance0GPU > 100:
+                    videoenhance0GPU = 100
+                if videoenhance1GPU > 100:
+                    videoenhance1GPU = 100
+                if unknownGPU > 100:
+                    unknownGPU = 100
+
                 current_gpu_stats = {
-                    "video0": int(engines.get('Video/0', {}).get('busy', 0)),
-                    "video1": int(engines.get('Video/1', {}).get('busy', 0)),
-                    "render": int(engines.get('Render/3D/0', {}).get('busy', 0)),
-                    "blitter": int(engines.get('Blitter/0', {}).get('busy', 0)),
-                    "videoenhance0": int(engines.get('VideoEnhance/0', {}).get('busy', 0)),
-                    "videoenhance1": int(engines.get('VideoEnhance/1', {}).get('busy', 0)),
-                    "unknown": int(engines.get('Unknown/0', {}).get('busy', 0))
+                    "video0": video0GPU,
+                    "video1": video1GPU,
+                    "render": renderGPU, 
+                    "blitter": blitterGPU,
+                    "videoenhance0": videoenhance0GPU,
+                    "videoenhance1": videoenhance1GPU,
+                    "unknown": unknownGPU
                 }
 
             except json.JSONDecodeError as e:
